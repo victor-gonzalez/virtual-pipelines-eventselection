@@ -43,7 +43,7 @@ jobs:
         run: chmod a+x skim
 
       - name: access control
-        run: printf ${{ secret.USER_PASS }} | base64 -d | kinit ${{ secrets.USER_NAME }}@CERN.CH
+        run: printf ${{ secrets.USER_PASS }} | base64 -d | kinit ${{ secrets.USER_NAME }}@CERN.CH
 
       - name: runskim
         run: ./skim root://eoususer.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
