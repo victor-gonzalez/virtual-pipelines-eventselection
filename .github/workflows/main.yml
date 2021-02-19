@@ -46,5 +46,5 @@ jobs:
         run: printf ${{ secrets.USER_PASS }} | base64 -d | kinit ${{ secrets.USER_NAME }}@CERN.CH
 
       - name: runskim
-        run: ./skim root://eoususer.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
+        run: ./skim root://eosuser.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
 
