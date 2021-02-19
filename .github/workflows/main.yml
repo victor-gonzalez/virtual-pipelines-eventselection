@@ -1,0 +1,46 @@
+name: example
+on: push
+jobs: 
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: <first job>
+        run: echo hello world
+  compilecode:
+    needs: greeting
+    runs-on: ubuntu-latest
+    container: rootproject/root-conda:${{ matrix.version }}
+    continue-on-error: ${{ matrix.conterr }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [6.18.04]
+        conterr: [false]
+        include: 
+          - version: latest
+            conterr: true
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+      - name: <make job>
+        run: ./skim_cicd.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: skim${{ matrix.version }}
+          path: skim
+  execute:
+    needs: compilecode
+    runs-on: ubuntu-latest
+    container: rootproject/root-conda:6.18.04
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: skim6.18.04
+      - name: changesmode
+        run: chmod a+x skim
+      - name: runskim
+        run: ./skim
+
