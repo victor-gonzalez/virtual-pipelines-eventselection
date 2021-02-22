@@ -33,12 +33,12 @@ jobs:
         run: printf ${{ secrets.USER_PASS }} | base64 -d | kinit ${{ secrets.USER_NAME }}@CERN.CH
 
       - name: runskim
-        run: ./skim root://eosuser.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
+        run: ./skim root://eosuser.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1 > skim_ggH.log
 
       - uses: actions/upload-artifact@v2
         with:
-          name: resultsfile
-          path: skim_ggH.root
+          name: skimfiles
+          path: skim_ggH.*
 
   makeplots:
     needs: execute
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: resultsfile
+          name: skimfiles
 
       - name: makeplots
         run: python ./histograms.py skim_ggH.root ggH hist_ggH.root
@@ -60,4 +60,27 @@ jobs:
           name: histograms
           path: hist_ggH.root
           retention-days: 7
+
+  test_ggH:
+    needs: makeplots
+    runs-on: ubuntu-latest
+    container: rootproject/root-conda:6.18.04
+    steps:
+      - name: checkout-repository
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: skimfiles
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: histograms
+
+      - name: testskimlog
+        run: python tests/test_cutflow_ggH.py
+
+      - name: testhistograms
+        run: python tests/test_plot_ggH.py
+
 
