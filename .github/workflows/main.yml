@@ -3,16 +3,7 @@ on: push
 jobs: 
   compilecode:
     runs-on: ubuntu-latest
-    container: rootproject/root-conda:${{ matrix.version }}
-    continue-on-error: ${{ matrix.conterr }}
-    strategy:
-      fail-fast: false
-      matrix:
-        version: [6.18.04]
-        conterr: [false]
-        include: 
-          - version: latest
-            conterr: true
+    container: rootproject/root-conda:6.18.04
     steps:
       - name: checkout-repository
         uses: actions/checkout@v2
@@ -20,8 +11,9 @@ jobs:
         run: ./skim_cicd.sh
       - uses: actions/upload-artifact@v2
         with:
-          name: skim${{ matrix.version }}
+          name: skim_6.18.04
           path: skim
+
   execute:
     needs: compilecode
     runs-on: ubuntu-latest
@@ -32,7 +24,8 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: skim6.18.04
+          name: skim_6.18.04
+
       - name: changesmode
         run: chmod a+x skim
 
